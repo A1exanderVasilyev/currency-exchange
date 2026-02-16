@@ -21,6 +21,9 @@ public final class PropertiesUtil {
                              .getClassLoader()
                              .getResourceAsStream("application.properties")
         ) {
+            if (resourceAsStream == null) {
+                throw new RuntimeException("Application properties file not found");
+            }
             PROPERTIES.load(resourceAsStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
