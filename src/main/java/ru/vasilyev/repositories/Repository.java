@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface Repository<T> {
-    T save(T entity) throws SQLException;
-    List<T> findAll() throws SQLException;
-    Optional<T> findById(int id) throws SQLException;
-    void update(T entity) throws SQLException;
-    boolean delete(int id) throws SQLException;
-    boolean existsById(int id) throws SQLException;
+    T save(T entity);
+    List<T> findAll();
+    Optional<T> findById(int id);
+    void update(T entity);
+    boolean delete(int id);
+    boolean existsById(int id);
 }
