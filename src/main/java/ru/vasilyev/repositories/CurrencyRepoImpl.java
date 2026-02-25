@@ -28,7 +28,27 @@ public class CurrencyRepoImpl implements CurrencyRepository {
 
     @Override
     public Optional<Currency> findByCode(String code) {
-        return Optional.empty();
+        final String FIND_BY_CODE_SQL = FIND_ALL_SQL + """
+                WHERE c.code = ?;
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(FIND_BY_CODE_SQL);
+            preparedStatement.setString(1, code);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Currency currency = null;
+            if (resultSet.next()) {
+                currency = new Currency(
+                        resultSet.getInt("id"),
+                        code,
+                        resultSet.getString("fullname"),
+                        resultSet.getString("sign")
+                );
+            }
+            return Optional.ofNullable(currency);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -143,6 +163,6 @@ public class CurrencyRepoImpl implements CurrencyRepository {
 
     @Override
     public boolean existsById(int id) {
-        return false;
+        return findById(id).isPresent();
     }
 }
