@@ -4,11 +4,20 @@ import ru.vasilyev.models.Currency;
 import ru.vasilyev.utils.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class CurrencyRepoImpl implements CurrencyRepository {
     private static final CurrencyRepoImpl INSTANCE = new CurrencyRepoImpl();
+    final String FIND_ALL_SQL = """
+            SELECT
+                c.id,
+                c.code,
+                c.fullname,
+                c.sign
+            FROM currencies c
+            """;
 
     private CurrencyRepoImpl() {
     }
@@ -49,25 +58,78 @@ public class CurrencyRepoImpl implements CurrencyRepository {
 
     @Override
     public List<Currency> findAll() {
-        return List.of();
+        List<Currency> currencies = new ArrayList<>();
+        try (Connection connection = ConnectionManager.get()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL);
+            while (resultSet.next()) {
+                Currency currency = new Currency(
+                        resultSet.getInt("id"),
+                        resultSet.getString("code"),
+                        resultSet.getString("fullname"),
+                        resultSet.getString("sign")
+                );
+                currencies.add(currency);
+            }
+            return currencies;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Optional<Currency> findById(int id) {
-        return Optional.empty();
+        final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
+                WHERE c.id = ?;
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(FIND_BY_ID_SQL);
+            preparedStatement.setInt(1, id);
+            Currency currency = null;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                currency = new Currency(
+                        id,
+                        resultSet.getString("code"),
+                        resultSet.getString("fullname"),
+                        resultSet.getString("sign")
+                );
+            }
+            return Optional.ofNullable(currency);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void update(Currency entity) {
-
+        final String UPDATE_SQL = """
+                UPDATE currencies
+                SET code = ?,
+                    fullname = ?,
+                    sign = ?
+                WHERE id = ?;
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(UPDATE_SQL);
+            preparedStatement.setString(1, entity.getCode());
+            preparedStatement.setString(2, entity.getFullName());
+            preparedStatement.setString(3, entity.getSign());
+            preparedStatement.setInt(4, entity.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean delete(int id) {
         final String DELETE_SQL = """
-            DELETE FROM currencies
-            WHERE id = ?
-            """;
+                DELETE FROM currencies
+                WHERE id = ?
+                """;
 
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL);
