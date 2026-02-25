@@ -9,6 +9,6 @@ public interface Repository<T> {
     List<T> findAll() throws SQLException;
     Optional<T> findById(int id) throws SQLException;
     void update(T entity) throws SQLException;
-    void delete(int id) throws SQLException;
+    boolean delete(int id) throws SQLException;
     boolean existsById(int id) throws SQLException;
 }
