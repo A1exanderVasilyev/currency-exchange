@@ -6,16 +6,13 @@ import java.util.Properties;
 
 public final class PropertiesUtil {
 
-    private static final Properties PROPERTIES = new Properties();
+    private static final Properties PROPERTIES = loadProperties();
 
     private PropertiesUtil() {
     }
 
-    static {
-        loadProperties();
-    }
-
-    private static void loadProperties() {
+    private static Properties loadProperties() {
+        Properties properties = new Properties();
         try (InputStream resourceAsStream =
                      PropertiesUtil.class
                              .getClassLoader()
@@ -24,10 +21,11 @@ public final class PropertiesUtil {
             if (resourceAsStream == null) {
                 throw new RuntimeException("Application properties file not found");
             }
-            PROPERTIES.load(resourceAsStream);
+            properties.load(resourceAsStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return properties;
     }
 
     public static String get(String key) {
