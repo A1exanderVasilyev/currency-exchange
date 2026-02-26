@@ -171,6 +171,6 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
 
     @Override
     public boolean existsById(int id) {
-        return false;
+        return findById(id).isPresent();
     }
 }
