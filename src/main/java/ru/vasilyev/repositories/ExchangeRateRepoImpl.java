@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExchangeRateRepoImpl implements ExchangeRateRepository {
-    public static final ExchangeRateRepoImpl INSTANCE = new ExchangeRateRepoImpl();
+    private static final ExchangeRateRepoImpl INSTANCE = new ExchangeRateRepoImpl();
 
     private ExchangeRateRepoImpl() {
     }
 
-    public ExchangeRateRepoImpl getInstance() {
+    public static ExchangeRateRepoImpl getInstance() {
         return INSTANCE;
     }
 
@@ -86,6 +86,9 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, entity.getBaseCurrency().getId());
+            preparedStatement.setInt(2, entity.getTargetCurrency().getId());
+            preparedStatement.setBigDecimal(3, entity.getRate());
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -137,11 +140,13 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
         final String UPDATE_SQL = """
                 UPDATE exchangerates
                 SET rate = ?
+                WHERE id = ?;
                 """;
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement preparedStatement =
                     connection.prepareStatement(UPDATE_SQL);
             preparedStatement.setBigDecimal(1, entity.getRate());
+            preparedStatement.setInt(2, entity.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
