@@ -37,12 +37,28 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
             """;
 
     @Override
-    public Optional<ExchangeRate> findByCodePair(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
-        return Optional.empty();
+    public Optional<ExchangeRate> findByCodePair(String baseCurrencyCode, String targetCurrencyCode) {
+        final String FIND_BY_CODE_PAIR = FIND_ALL_SQL + """
+                WHERE bc.code = ? AND tc.code = ?;
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(FIND_BY_CODE_PAIR);
+            preparedStatement.setString(1, baseCurrencyCode);
+            preparedStatement.setString(2, targetCurrencyCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ExchangeRate exchangeRate = null;
+            if (resultSet.next()) {
+                exchangeRate = buildExchangeRate(resultSet);
+            }
+            return Optional.ofNullable(exchangeRate);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<ExchangeRate> findAllPairsWithBaseCurrency(String baseCurrencyCode) throws SQLException {
+    public List<ExchangeRate> findAllPairsWithBaseCurrency(String baseCurrencyCode) {
         return List.of();
     }
 
@@ -73,25 +89,7 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL);
             while (resultSet.next()) {
-                Currency baseCurrency = new Currency(
-                        resultSet.getInt("baseId"),
-                        resultSet.getString("baseCode"),
-                        resultSet.getString("baseFullName"),
-                        resultSet.getString("baseSign")
-                );
-                Currency targetCurrency = new Currency(
-                        resultSet.getInt("targetId"),
-                        resultSet.getString("targetCode"),
-                        resultSet.getString("targetFullName"),
-                        resultSet.getString("targetSign")
-                );
-                ExchangeRate exchangeRate = new ExchangeRate(
-                        resultSet.getInt("id"),
-                        baseCurrency,
-                        targetCurrency,
-                        resultSet.getBigDecimal("rate")
-                );
-                exchangeRates.add(exchangeRate);
+                exchangeRates.add(buildExchangeRate(resultSet));
             }
             return exchangeRates;
         } catch (SQLException e) {
@@ -111,24 +109,7 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
             ExchangeRate exchangeRate = null;
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                Currency baseCurrency = new Currency(
-                        resultSet.getInt("baseId"),
-                        resultSet.getString("baseCode"),
-                        resultSet.getString("baseFullName"),
-                        resultSet.getString("baseSign")
-                );
-                Currency targetCurrency = new Currency(
-                        resultSet.getInt("targetId"),
-                        resultSet.getString("targetCode"),
-                        resultSet.getString("targetFullName"),
-                        resultSet.getString("targetSign")
-                );
-                exchangeRate = new ExchangeRate(
-                        resultSet.getInt("id"),
-                        baseCurrency,
-                        targetCurrency,
-                        resultSet.getBigDecimal("rate")
-                );
+                exchangeRate = buildExchangeRate(resultSet);
             }
             return Optional.ofNullable(exchangeRate);
         } catch (SQLException e) {
@@ -172,5 +153,26 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
     @Override
     public boolean existsById(int id) {
         return findById(id).isPresent();
+    }
+
+    private static ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {
+        Currency baseCurrency = new Currency(
+                resultSet.getInt("baseId"),
+                resultSet.getString("baseCode"),
+                resultSet.getString("baseFullName"),
+                resultSet.getString("baseSign")
+        );
+        Currency targetCurrency = new Currency(
+                resultSet.getInt("targetId"),
+                resultSet.getString("targetCode"),
+                resultSet.getString("targetFullName"),
+                resultSet.getString("targetSign")
+        );
+        return new ExchangeRate(
+                resultSet.getInt("id"),
+                baseCurrency,
+                targetCurrency,
+                resultSet.getBigDecimal("rate")
+        );
     }
 }
