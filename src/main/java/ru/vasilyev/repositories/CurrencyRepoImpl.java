@@ -10,14 +10,6 @@ import java.util.Optional;
 
 public class CurrencyRepoImpl implements CurrencyRepository {
     private static final CurrencyRepoImpl INSTANCE = new CurrencyRepoImpl();
-    final String FIND_ALL_SQL = """
-            SELECT
-                c.id,
-                c.code,
-                c.fullname,
-                c.sign
-            FROM currencies c
-            """;
 
     private CurrencyRepoImpl() {
     }
@@ -25,6 +17,15 @@ public class CurrencyRepoImpl implements CurrencyRepository {
     public static CurrencyRepoImpl getInstance() {
         return INSTANCE;
     }
+
+    private final String FIND_ALL_SQL = """
+            SELECT
+                c.id,
+                c.code,
+                c.fullname,
+                c.sign
+            FROM currencies c
+            """;
 
     @Override
     public Optional<Currency> findByCode(String code) {
@@ -75,8 +76,8 @@ public class CurrencyRepoImpl implements CurrencyRepository {
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
         try (Connection connection = ConnectionManager.get()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL);
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL);
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 currencies.add(buildCurrency(resultSet));
             }
