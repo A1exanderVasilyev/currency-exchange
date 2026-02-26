@@ -138,7 +138,18 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
 
     @Override
     public void update(ExchangeRate entity) {
-
+        final String UPDATE_SQL = """
+                UPDATE exchangerates
+                SET rate = ?
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(UPDATE_SQL);
+            preparedStatement.setBigDecimal(1, entity.getRate());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
