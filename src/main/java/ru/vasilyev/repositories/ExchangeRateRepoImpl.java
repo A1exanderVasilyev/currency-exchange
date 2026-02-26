@@ -59,7 +59,22 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
 
     @Override
     public List<ExchangeRate> findAllPairsWithBaseCurrency(String baseCurrencyCode) {
-        return List.of();
+        final String FIND_ALL_PAIRS_WITH_BASE_CURRENCY = FIND_ALL_SQL + """
+                WHERE bc.code = ?;
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(FIND_ALL_PAIRS_WITH_BASE_CURRENCY);
+            preparedStatement.setString(1, baseCurrencyCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<ExchangeRate> exchangeRates = new ArrayList<>();
+            while (resultSet.next()) {
+                exchangeRates.add(buildExchangeRate(resultSet));
+            }
+            return exchangeRates;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
