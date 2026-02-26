@@ -14,17 +14,17 @@ public class ExchangeRate {
     private int id;
 
     @NonNull
-    private Currency baseCurrencyId;
+    private Currency baseCurrency;
 
     @NonNull
-    private Currency targetCurrencyId;
+    private Currency targetCurrency;
 
     @NonNull
     private BigDecimal rate;
 
-    public ExchangeRate(@NonNull Currency baseCurrencyId, @NonNull Currency targetCurrencyId, @NonNull BigDecimal rate) {
-        this.baseCurrencyId = baseCurrencyId;
-        this.targetCurrencyId = targetCurrencyId;
+    public ExchangeRate(@NonNull Currency baseCurrency, @NonNull Currency targetCurrency, @NonNull BigDecimal rate) {
+        this.baseCurrency = baseCurrency;
+        this.targetCurrency = targetCurrency;
         this.rate = rate;
     }
 }
