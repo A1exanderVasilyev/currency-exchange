@@ -154,7 +154,19 @@ public class ExchangeRateRepoImpl implements ExchangeRateRepository {
 
     @Override
     public boolean delete(int id) {
-        return false;
+        final String DELETE_SQL = """
+                DELETE
+                FROM exchangerates
+                WHERE id = ?
+                """;
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(DELETE_SQL);
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
