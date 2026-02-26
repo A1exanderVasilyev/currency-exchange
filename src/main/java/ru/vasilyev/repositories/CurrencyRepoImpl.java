@@ -38,12 +38,7 @@ public class CurrencyRepoImpl implements CurrencyRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             Currency currency = null;
             if (resultSet.next()) {
-                currency = new Currency(
-                        resultSet.getInt("id"),
-                        code,
-                        resultSet.getString("fullname"),
-                        resultSet.getString("sign")
-                );
+                currency = buildCurrency(resultSet);
             }
             return Optional.ofNullable(currency);
         } catch (SQLException e) {
@@ -83,13 +78,7 @@ public class CurrencyRepoImpl implements CurrencyRepository {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL);
             while (resultSet.next()) {
-                Currency currency = new Currency(
-                        resultSet.getInt("id"),
-                        resultSet.getString("code"),
-                        resultSet.getString("fullname"),
-                        resultSet.getString("sign")
-                );
-                currencies.add(currency);
+                currencies.add(buildCurrency(resultSet));
             }
             return currencies;
         } catch (SQLException e) {
@@ -109,12 +98,7 @@ public class CurrencyRepoImpl implements CurrencyRepository {
             Currency currency = null;
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                currency = new Currency(
-                        id,
-                        resultSet.getString("code"),
-                        resultSet.getString("fullname"),
-                        resultSet.getString("sign")
-                );
+                currency = buildCurrency(resultSet);
             }
             return Optional.ofNullable(currency);
         } catch (SQLException e) {
@@ -164,5 +148,14 @@ public class CurrencyRepoImpl implements CurrencyRepository {
     @Override
     public boolean existsById(int id) {
         return findById(id).isPresent();
+    }
+
+    private static Currency buildCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getInt("id"),
+                resultSet.getString("code"),
+                resultSet.getString("fullname"),
+                resultSet.getString("sign")
+        );
     }
 }
