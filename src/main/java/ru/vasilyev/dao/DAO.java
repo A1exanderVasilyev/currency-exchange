@@ -1,10 +1,9 @@
-package ru.vasilyev.repositories;
+package ru.vasilyev.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface Repository<T> {
+public interface DAO<T> {
     T save(T entity);
     List<T> findAll();
     Optional<T> findById(int id);

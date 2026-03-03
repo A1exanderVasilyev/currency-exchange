@@ -1,4 +1,4 @@
-package ru.vasilyev.repositories;
+package ru.vasilyev.dao;
 
 import ru.vasilyev.models.Currency;
 import ru.vasilyev.utils.ConnectionManager;
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CurrencyRepoImpl implements CurrencyRepository {
-    private static final CurrencyRepoImpl INSTANCE = new CurrencyRepoImpl();
+public class CurrencyDAOImpl implements CurrencyDAO {
+    private static final CurrencyDAOImpl INSTANCE = new CurrencyDAOImpl();
 
-    private CurrencyRepoImpl() {
+    private CurrencyDAOImpl() {
     }
 
-    public static CurrencyRepoImpl getInstance() {
+    public static CurrencyDAOImpl getInstance() {
         return INSTANCE;
     }
 

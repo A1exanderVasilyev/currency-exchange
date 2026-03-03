@@ -1,4 +1,4 @@
-package ru.vasilyev.repositories;
+package ru.vasilyev.dao;
 
 import ru.vasilyev.models.Currency;
 import ru.vasilyev.models.ExchangeRate;
@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExchangeRateRepoImpl implements ExchangeRateRepository {
-    private static final ExchangeRateRepoImpl INSTANCE = new ExchangeRateRepoImpl();
+public class ExchangeRateDAOImpl implements ExchangeRateDAO {
+    private static final ExchangeRateDAOImpl INSTANCE = new ExchangeRateDAOImpl();
 
-    private ExchangeRateRepoImpl() {
+    private ExchangeRateDAOImpl() {
     }
 
-    public static ExchangeRateRepoImpl getInstance() {
+    public static ExchangeRateDAOImpl getInstance() {
         return INSTANCE;
     }
 
