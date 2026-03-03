@@ -19,7 +19,12 @@ public final class ConnectionManager {
     private static List<Connection> sourceConnections;
 
     static {
-        initConnectionPool();
+        try {
+            Class.forName("org.postgresql.Driver");
+            initConnectionPool();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("PostgreSQL Driver not found", e);
+        }
     }
 
     private ConnectionManager() {
