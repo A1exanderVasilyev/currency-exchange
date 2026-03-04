@@ -154,8 +154,8 @@ public class CurrencyDAOImpl implements CurrencyDAO {
     private static Currency buildCurrency(ResultSet resultSet) throws SQLException {
         return new Currency(
                 resultSet.getInt("id"),
-                resultSet.getString("code"),
                 resultSet.getString("fullname"),
+                resultSet.getString("code"),
                 resultSet.getString("sign")
         );
     }
