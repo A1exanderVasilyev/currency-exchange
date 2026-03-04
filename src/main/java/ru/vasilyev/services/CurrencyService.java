@@ -25,4 +25,8 @@ public class CurrencyService {
     public Currency getCurrencyByCode(String code) {
         return currencyDAO.findByCode(code).orElse(null);
     }
+
+    public Currency saveCurrency(Currency currency) {
+        return currencyDAO.save(currency);
+    }
 }
