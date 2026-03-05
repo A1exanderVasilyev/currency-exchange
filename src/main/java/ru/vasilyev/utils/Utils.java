@@ -1,5 +1,7 @@
 package ru.vasilyev.utils;
 
+import java.math.BigDecimal;
+
 public class Utils {
     private static final int CODE_LENGTH = 3;
     public static String getCurrencyCodeFromPath(String path, int startIndex, int endIndex) {
@@ -21,5 +23,13 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static BigDecimal parseRateToBigDecimal(String rate) {
+        try {
+            return new BigDecimal(rate);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }
