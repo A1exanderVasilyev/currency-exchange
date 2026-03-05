@@ -13,4 +13,13 @@ public class Utils {
         result[1] = getCurrencyCodeFromPath(path, CODE_LENGTH + 1, CODE_LENGTH * 2 + 1);
         return result;
     }
+
+    public static boolean isAnyParamsEmpty(String[] args) {
+        for (String arg : args) {
+            if (arg == null || arg.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
