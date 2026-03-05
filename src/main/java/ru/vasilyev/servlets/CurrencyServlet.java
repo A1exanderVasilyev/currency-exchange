@@ -24,8 +24,12 @@ public class CurrencyServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code is missing");
             return;
         }
-
-        String currencyCode = Utils.getCurrencyCodeFromPath(path);
+        int minimumValidSize = 4;
+        if (path.length() < minimumValidSize) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code is not valid");
+            return;
+        }
+        String currencyCode = Utils.getCurrencyCodeFromPath(path, 1, 4);
         try {
             Currency currency = currencyService.getCurrencyByCode(currencyCode);
             if (currency == null) {
