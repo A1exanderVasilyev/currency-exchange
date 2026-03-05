@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.vasilyev.models.Currency;
 import ru.vasilyev.services.CurrencyService;
+import ru.vasilyev.utils.Utils;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class CurrenciesServlet extends HttpServlet {
     }
 
     private boolean isParametersNotValid(String code, String name, String sign) {
-        if (isAnyParamsEmpty(code, name, sign)) {
+        if (Utils.isAnyParamsEmpty(new String[]{code, name, sign})) {
             return true;
         }
         // db constraints
@@ -66,11 +67,5 @@ public class CurrenciesServlet extends HttpServlet {
         return code.length() != codeLength
                 || name.length() > maxNameLength
                 || sign.length() > maxSignLength;
-    }
-
-    private boolean isAnyParamsEmpty(String code, String name, String sign) {
-        return code == null || code.isEmpty()
-                || name == null || name.isEmpty()
-                || sign == null || sign.isEmpty();
     }
 }
