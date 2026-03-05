@@ -33,4 +33,8 @@ public class ExchangeRateService {
     public boolean isExchangeRateExists(String base, String target) {
         return exchangeRateDAO.findByCodePair(base, target).isPresent();
     }
+
+    public void updateExchangeRate(ExchangeRate exchangeRate) {
+        exchangeRateDAO.update(exchangeRate);
+    }
 }
