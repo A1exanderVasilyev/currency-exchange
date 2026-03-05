@@ -15,6 +15,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import static ru.vasilyev.utils.Utils.parseRateToBigDecimal;
+
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -73,14 +75,6 @@ public class ExchangeRatesServlet extends HttpServlet {
         }
     }
 
-    private BigDecimal parseRateToBigDecimal(String rate) {
-        try {
-            return new BigDecimal(rate);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
     private boolean isCurrencyCodesNotValid(String baseCurrencyCode, String targetCurrencyCode) {
         if (Utils.isAnyParamsEmpty(new String[]{baseCurrencyCode, targetCurrencyCode})) {
             return true;
@@ -91,5 +85,4 @@ public class ExchangeRatesServlet extends HttpServlet {
         return baseCurrencyCode.length() != codeLength ||
                 targetCurrencyCode.length() != codeLength;
     }
-
 }
