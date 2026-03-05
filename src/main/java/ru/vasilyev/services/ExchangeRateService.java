@@ -25,4 +25,12 @@ public class ExchangeRateService {
     public ExchangeRate getExchangeRateByCodePair(String base, String target) throws SQLException {
         return exchangeRateDAO.findByCodePair(base, target).orElse(null);
     }
+
+    public ExchangeRate saveExchangeRate(ExchangeRate exchangeRate) {
+        return exchangeRateDAO.save(exchangeRate);
+    }
+
+    public boolean isExchangeRateExists(String base, String target) {
+        return exchangeRateDAO.findByCodePair(base, target).isPresent();
+    }
 }
