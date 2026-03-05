@@ -20,15 +20,12 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
-        if (path == null || path.equals("/")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code is missing");
-            return;
-        }
         int minimumValidSize = 4;
-        if (path.length() < minimumValidSize) {
+        if (path == null || path.equals("/") || path.length() < minimumValidSize) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code is not valid");
             return;
         }
+
         String currencyCode = Utils.getCurrencyCodeFromPath(path, 1, 4);
         try {
             Currency currency = currencyService.getCurrencyByCode(currencyCode);
