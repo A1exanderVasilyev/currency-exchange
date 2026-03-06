@@ -4,7 +4,6 @@ import ru.vasilyev.dao.ExchangeRateDAO;
 import ru.vasilyev.dao.ExchangeRateDAOImpl;
 import ru.vasilyev.models.ExchangeRate;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class ExchangeRateService {
@@ -22,7 +21,7 @@ public class ExchangeRateService {
         return exchangeRateDAO.findAll();
     }
 
-    public ExchangeRate getExchangeRateByCodePair(String base, String target) throws SQLException {
+    public ExchangeRate getExchangeRateByCodePair(String base, String target) {
         return exchangeRateDAO.findByCodePair(base, target).orElse(null);
     }
 
