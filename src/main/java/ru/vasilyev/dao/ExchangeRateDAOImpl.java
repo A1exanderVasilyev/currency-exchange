@@ -178,14 +178,14 @@ public class ExchangeRateDAOImpl implements ExchangeRateDAO {
     private static ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {
         Currency baseCurrency = new Currency(
                 resultSet.getInt("baseId"),
-                resultSet.getString("baseCode"),
                 resultSet.getString("baseFullName"),
+                resultSet.getString("baseCode"),
                 resultSet.getString("baseSign")
         );
         Currency targetCurrency = new Currency(
                 resultSet.getInt("targetId"),
-                resultSet.getString("targetCode"),
                 resultSet.getString("targetFullName"),
+                resultSet.getString("targetCode"),
                 resultSet.getString("targetSign")
         );
         return new ExchangeRate(
