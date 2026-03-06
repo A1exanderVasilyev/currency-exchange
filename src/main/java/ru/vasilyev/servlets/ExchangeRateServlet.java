@@ -12,6 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.function.Function;
 
 import static ru.vasilyev.utils.Utils.parseRateToBigDecimal;
@@ -70,13 +71,29 @@ public class ExchangeRateServlet extends HttpServlet {
         if (rate == null || rate.trim().isEmpty()) {
             throw new IllegalArgumentException("Invalid exchange rate code");
         }
-        BigDecimal bigDecimalRate = parseRateToBigDecimal(rate.trim().replaceAll(",", "."));
-        if (bigDecimalRate == null) {
+        BigDecimal newRate = parseRateToBigDecimal(rate.trim().replaceAll(",", "."));
+        if (newRate == null || newRate.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Invalid exchange rate code");
         }
-        exchangeRate.setRate(bigDecimalRate);
+        exchangeRate.setRate(newRate);
         exchangeRateService.updateExchangeRate(exchangeRate);
+
+        updateReverseExchangeRate(exchangeRate, newRate);
+
         return exchangeRate;
+    }
+
+    private void updateReverseExchangeRate(ExchangeRate exchangeRate, BigDecimal newRate) {
+        String baseCode = exchangeRate.getBaseCurrency().getCode();
+        String targetCode = exchangeRate.getTargetCurrency().getCode();
+
+        ExchangeRate reverseExchangeRate =
+                exchangeRateService.getExchangeRateByCodePair(targetCode, baseCode);
+
+        if (reverseExchangeRate != null) {
+            reverseExchangeRate.setRate(BigDecimal.ONE.divide(newRate, 6, RoundingMode.HALF_UP));
+            exchangeRateService.updateExchangeRate(reverseExchangeRate);
+        }
     }
 
     private String[] extractExchangeRatePair(HttpServletRequest req,
