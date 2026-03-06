@@ -34,4 +34,8 @@ public class ExchangeRate {
     public @NonNull BigDecimal getRate() {
         return rate.setScale(2, RoundingMode.HALF_UP);
     }
+
+    public BigDecimal getFullRate() {
+        return rate.setScale(6, RoundingMode.HALF_UP);
+    }
 }
