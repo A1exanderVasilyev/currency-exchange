@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.function.Function;
 
-import static ru.vasilyev.utils.Utils.parseRateToBigDecimal;
-
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
     private final ExchangeRateService exchangeRateService = ExchangeRateService.getInstance();
@@ -71,7 +69,7 @@ public class ExchangeRateServlet extends HttpServlet {
         if (rate == null || rate.trim().isEmpty()) {
             throw new IllegalArgumentException("Invalid exchange rate code");
         }
-        BigDecimal newRate = parseRateToBigDecimal(rate.trim().replaceAll(",", "."));
+        BigDecimal newRate = Utils.parseStringToBigDecimal(rate.trim().replaceAll(",", "."));
         if (newRate == null || newRate.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Invalid exchange rate code");
         }
