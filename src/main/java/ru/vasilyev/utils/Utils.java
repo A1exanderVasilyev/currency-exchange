@@ -25,9 +25,20 @@ public class Utils {
         return false;
     }
 
-    public static BigDecimal parseRateToBigDecimal(String rate) {
+    public static boolean isCurrencyCodesNotValid(String baseCurrencyCode, String targetCurrencyCode) {
+        if (isAnyParamsEmpty(new String[]{baseCurrencyCode, targetCurrencyCode})) {
+            return true;
+        }
+
+        int codeLength = 3;
+
+        return baseCurrencyCode.length() != codeLength ||
+                targetCurrencyCode.length() != codeLength;
+    }
+
+    public static BigDecimal parseStringToBigDecimal(String number) {
         try {
-            return new BigDecimal(rate);
+            return new BigDecimal(number);
         } catch (NumberFormatException e) {
             return null;
         }
