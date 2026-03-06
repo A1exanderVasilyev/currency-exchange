@@ -15,7 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import static ru.vasilyev.utils.Utils.parseRateToBigDecimal;
+import static ru.vasilyev.utils.Utils.parseStringToBigDecimal;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
@@ -42,7 +42,7 @@ public class ExchangeRatesServlet extends HttpServlet {
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rate = req.getParameter("rate");
 
-        if (isCurrencyCodesNotValid(baseCurrencyCode, targetCurrencyCode)) {
+        if (Utils.isCurrencyCodesNotValid(baseCurrencyCode, targetCurrencyCode)) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Currency code not valid");
             return;
         }
@@ -60,7 +60,7 @@ public class ExchangeRatesServlet extends HttpServlet {
                 return;
             }
 
-            BigDecimal bigDecimalRate = parseRateToBigDecimal(rate.trim().replaceAll(",", "."));
+            BigDecimal bigDecimalRate = parseStringToBigDecimal(rate.trim().replaceAll(",", "."));
             if (bigDecimalRate == null) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid rate format");
                 return;
@@ -73,16 +73,5 @@ public class ExchangeRatesServlet extends HttpServlet {
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while saving exchange rates");
         }
-    }
-
-    private boolean isCurrencyCodesNotValid(String baseCurrencyCode, String targetCurrencyCode) {
-        if (Utils.isAnyParamsEmpty(new String[]{baseCurrencyCode, targetCurrencyCode})) {
-            return true;
-        }
-
-        int codeLength = 3;
-
-        return baseCurrencyCode.length() != codeLength ||
-                targetCurrencyCode.length() != codeLength;
     }
 }
