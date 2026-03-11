@@ -65,8 +65,8 @@ public class ExchangeRateServlet extends HttpServlet {
 
     private ExchangeRate processPatch(HttpServletRequest req,
                                       ExchangeRate exchangeRate) {
-        String rate = req.getParameter("rate");
-        if (rate == null || rate.trim().isEmpty()) {
+        String rate = getRate(req);
+        if (rate.trim().isEmpty()) {
             throw new IllegalArgumentException("Invalid exchange rate code");
         }
         BigDecimal newRate = Utils.parseStringToBigDecimal(rate.trim().replaceAll(",", "."));
@@ -79,6 +79,18 @@ public class ExchangeRateServlet extends HttpServlet {
         updateReverseExchangeRate(exchangeRate, newRate);
 
         return exchangeRate;
+    }
+
+    private static String getRate(HttpServletRequest req) {
+        try {
+            String rateParameterLine = req.getReader().readLine();
+            if (rateParameterLine == null || !rateParameterLine.contains("rate=")) {
+                throw new IllegalArgumentException("Invalid request");
+            }
+            return rateParameterLine.replace("rate=", "");
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid rate");
+        }
     }
 
     private void updateReverseExchangeRate(ExchangeRate exchangeRate, BigDecimal newRate) {
